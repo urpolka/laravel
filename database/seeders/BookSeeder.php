@@ -9,6 +9,8 @@ class BookSeeder extends Seeder
 {
     public function run(): void
     {
-        Book::factory()->count(15)->create();
+        if (Book::count() === 0) {
+            Book::factory()->count(15)->create();
+        }
     }
 }

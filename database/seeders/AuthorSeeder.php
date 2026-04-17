@@ -9,6 +9,8 @@ class AuthorSeeder extends Seeder
 {
     public function run(): void
     {
-        Author::factory()->count(5)->create();
+        if (Author::count() === 0) {
+            Author::factory()->count(5)->create();
+        }
     }
 }
