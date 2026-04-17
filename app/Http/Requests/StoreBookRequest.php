@@ -23,7 +23,7 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'title'          => 'required|string|max:255',
-            'author'         => 'required|string|max:255',
+            'author_id'      => 'required|integer|exists:authors,id',
             'isbn'           => 'nullable|string|max:20',
             'published_year' => 'nullable|integer|min:1000|max:2100',
             'description'    => 'nullable|string',

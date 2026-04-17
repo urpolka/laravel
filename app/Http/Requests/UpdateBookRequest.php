@@ -18,7 +18,7 @@ class UpdateBookRequest extends FormRequest
             // 'sometimes' = проверяй только если поле передано
             // При update не все поля обязательны — можно обновить только title
             'title'          => 'sometimes|required|string|max:255',
-            'author'         => 'sometimes|required|string|max:255',
+            'author_id'      => 'sometimes|required|integer|exists:authors,id',
             'isbn'           => 'nullable|string|max:20',
             'published_year' => 'nullable|integer|min:1000|max:2100',
             'description'    => 'nullable|string',
