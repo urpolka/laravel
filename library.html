@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Библиотека</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+    h1, h2 { margin-bottom: 12px; }
+    input { display: block; width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #2563eb; }
+    .book-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .book-title { font-weight: 600; flex: 1; min-width: 150px; }
+    .book-author { color: #666; font-size: 14px; }
+    .badge { font-size: 12px; padding: 2px 8px; border-radius: 12px; }
+    .badge-ok { background: #dcfce7; color: #166534; }
+    .badge-no { background: #fee2e2; color: #991b1b; }
+    .btn-del { background: #ef4444; padding: 4px 10px; font-size: 12px; }
+    .btn-del:hover { background: #dc2626; }
+    .error { color: #dc2626; font-size: 13px; margin-top: 6px; min-height: 18px; }
+    section { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    #header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    #logout-btn { background: #6b7280; display: none; }
+    select { display: block; width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <h1>📚 Библиотека</h1>
+  <button id="logout-btn" onclick="logout()">Выйти</button>
+</div>
+
+<!-- Список книг -->
+<section>
+  <h2>Книги</h2>
+  <div id="books-list">Загрузка...</div>
+</section>
+
+<!-- Форма логина -->
+<section id="login-section">
+  <h2>Войти</h2>
+  <form id="login-form">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Пароль" required>
+    <button type="submit">Войти</button>
+    <p id="login-error" class="error"></p>
+  </form>
+</section>
+
+<!-- Форма добавления -->
+<section id="add-section" style="display:none">
+  <h2>Добавить книгу</h2>
+  <form id="add-form">
+    <input type="text" id="book-title" placeholder="Название" required>
+    <select id="book-author-id">
+      <option value="">— Автор (необязательно) —</option>
+    </select>
+    <button type="submit">Добавить</button>
+    <p id="add-error" class="error"></p>
+  </form>
+</section>
+
+<script>
+const API_URL = 'http://localhost:8000/api';
+
+async function api(endpoint, options = {}) {
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  };
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+  if (res.status === 204) return null;
+  const data = await res.json();
+  if (!res.ok) throw data;
+  return data;
+}
+
+async function loadBooks() {
+  const list = document.getElementById('books-list');
+  list.innerHTML = '<p>Загрузка...</p>';
+  try {
+    const data = await api('/books?include=author');
+    const isAuth = !!localStorage.getItem('token');
+    if (!data.data.length) {
+      list.innerHTML = '<p>Книг пока нет.</p>';
+      return;
+    }
+    list.innerHTML = data.data.map(book => `
+      <div class="book-card">
+        <span class="book-title">${book.title}</span>
+        <span class="book-author">${book.author ? book.author.name : '—'}</span>
+        <span class="badge ${book.is_available ? 'badge-ok' : 'badge-no'}">
+          ${book.is_available ? 'Доступна' : 'Выдана'}
+        </span>
+        ${isAuth ? `<button class="btn-del" onclick="deleteBook(${book.id})">Удалить</button>` : ''}
+      </div>
+    `).join('');
+  } catch (err) {
+    list.innerHTML = '<p class="error">Ошибка загрузки. Проверь что Laravel запущен.</p>';
+    console.error(err);
+  }
+}
+
+async function loadAuthors() {
+  try {
+    const data = await api('/authors');
+    const select = document.getElementById('book-author-id');
+    const authors = data.data || data; // на случай если без пагинации
+    authors.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id;
+      opt.textContent = a.name;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.warn('Авторы не загрузились:', err);
+  }
+}
+
+function updateAuthUI() {
+  const isAuth = !!localStorage.getItem('token');
+  document.getElementById('login-section').style.display = isAuth ? 'none'   : 'block';
+  document.getElementById('add-section').style.display   = isAuth ? 'block'  : 'none';
+  document.getElementById('logout-btn').style.display    = isAuth ? 'inline' : 'none';
+  if (isAuth) loadAuthors();
+}
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  try {
+    const data = await api('/login', {
+      method: 'POST',
+      body: {
+        email:    document.getElementById('email').value,
+        password: document.getElementById('password').value,
+      },
+    });
+    localStorage.setItem('token', data.access_token);
+    updateAuthUI();
+    loadBooks();
+  } catch (err) {
+    errEl.textContent = err.message || 'Неверные данные';
+  }
+});
+
+document.getElementById('add-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl   = document.getElementById('add-error');
+  const authorId = document.getElementById('book-author-id').value;
+  errEl.textContent = '';
+  try {
+    await api('/books', {
+      method: 'POST',
+      body: {
+        title:     document.getElementById('book-title').value,
+        author_id: authorId ? parseInt(authorId) : null,
+        is_available: true,
+      },
+    });
+    e.target.reset();
+    loadBooks();
+  } catch (err) {
+    errEl.textContent = err.errors
+      ? Object.values(err.errors).flat().join(', ')
+      : err.message || 'Ошибка';
+  }
+});
+
+async function deleteBook(id) {
+  if (!confirm('Удалить эту книгу?')) return;
+  try {
+    await api(`/books/${id}`, { method: 'DELETE' });
+    loadBooks();
+  } catch (err) {
+    alert('Ошибка удаления');
+    console.error(err);
+  }
+}
+
+async function logout() {
+  try { await api('/logout', { method: 'POST' }); } catch (e) {}
+  localStorage.removeItem('token');
+  updateAuthUI();
+  loadBooks();
+}
+
+// Запуск
+updateAuthUI();
+loadBooks();
+</script>
+</body>
+</html>
