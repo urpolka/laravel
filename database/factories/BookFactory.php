@@ -15,11 +15,11 @@ class BookFactory extends Factory
     public function definition(): array
     {
         return [
-        'title' => fake()->sentence(3),
-        'isbn' => fake()->isbn13(),
-        'published_year' => fake()->numberBetween(1950, 2023),
-        'description' => fake()->paragraph(),
-        'is_available' => fake()->boolean(),
+        'title' => $this->faker->sentence(3),
+        'isbn' => $this->faker->isbn13(),
+        'published_year' => $this->faker->numberBetween(1950, 2023),
+        'description' => $this->faker->paragraph(),
+        'is_available' => $this->faker->boolean(),
         'author_id' => Author::factory(),
         ];
     }
