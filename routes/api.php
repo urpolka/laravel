@@ -30,3 +30,4 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('authors', AuthorController::class)->only(['index', 'show']);
 Route::get('/library', [LibraryController::class, 'info']);
 Route::get('/hello', fn() => response()->json(['message' => 'Hello World']));
+Route::get('/x', fn() => response()->json(['message' => 'ХУЙ']));
