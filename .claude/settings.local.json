@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan:*)",
+      "Bash(mysql:*)",
+      "Bash(where mysql:*)",
+      "Read(//c/Program Files/MySQL/**)",
+      "Bash(ls \"C:/Program Files/MySQL/MySQL Server\"*)",
+      "Bash(ls \"/c/Program Files/MySQL/\"*)",
+      "Bash(/c/Program Files/MySQL/MySQL Server 8.4/bin/mysql:*)",
+      "Bash(/c/Program Files/MySQL/MySQL Server 9.6/bin/mysql:*)"
+    ]
+  }
+}
