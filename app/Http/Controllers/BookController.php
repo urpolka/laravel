@@ -9,13 +9,10 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-  public function index(Request $request): JsonResponse
-  {
-    $query = Book::with('author');
-    if ($request->has('available')) {
-        $query->where('is_available', $request->boolean('available'));
-        }
-    return response()->json($query->paginate(15));
+  public function index()
+   {
+     $books = Book::with('author')->get();
+      return view('books.index', compact('books'));
     }
 
     public function store(StoreBookRequest $request): JsonResponse
