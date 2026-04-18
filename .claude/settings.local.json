@@ -8,7 +8,30 @@
       "Bash(ls \"C:/Program Files/MySQL/MySQL Server\"*)",
       "Bash(ls \"/c/Program Files/MySQL/\"*)",
       "Bash(/c/Program Files/MySQL/MySQL Server 8.4/bin/mysql:*)",
-      "Bash(/c/Program Files/MySQL/MySQL Server 9.6/bin/mysql:*)"
+      "Bash(/c/Program Files/MySQL/MySQL Server 9.6/bin/mysql:*)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('composer.json'\\)\\); print\\(json.dumps\\(d['scripts']['deploy'], indent=2\\)\\)\")",
+      "Bash(composer global *)",
+      "Bash(composer --version)",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'add package-lock.json for CI builds *)",
+      "Bash(git push *)",
+      "WebFetch(domain:laravel-main-64dirs.free.laravel.cloud)",
+      "Bash(git commit -m 'fix: uncomment welcome view route *)",
+      "Bash(git commit -m 'add UserSeeder with test user, run seed on deploy *)",
+      "Bash(git commit -m 'fix seeders: skip if data already exists *)",
+      "Bash(git commit -m 'fix factories: replace fake\\(\\) with $this->faker-> for production compatibility *)",
+      "Bash(git commit -m 'move fakerphp/faker to require so seeders work in production *)",
+      "Bash(where composer *)",
+      "Read(//c/Users/0mand/AppData/Roaming/Composer/vendor/**)",
+      "Bash(/c/Users/0mand/.config/herd/bin/composer.bat update *)",
+      "Bash(python3 *)",
+      "Bash(git commit -m 'update composer.lock: move faker to production packages *)",
+      "Bash(curl -s http://localhost:8001)",
+      "Bash(curl -v http://localhost:8001)",
+      "Bash(netstat -ano)",
+      "Bash(/c/Users/0mand/.config/herd/bin/php.bat *)",
+      "Bash(powershell.exe *)"
     ]
   }
 }
