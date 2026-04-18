@@ -11,15 +11,19 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-    $query = Book::with('author');
-    if ($request->filled('genre')) {
+        $query = Book::with('author');
+         if ($request->filled('genre')) {
         $query->where('genre', $request->genre);
          }
-    $query->orderBy('year', 'desc');
-    $books = $query->get();
-    $genres = Book::distinct()->pluck('genre');
-    return view('books.index', compact('books', 'genres'));
-}
+         if ($request->filled('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+         }
+          $query->orderBy('year', 'desc');
+           $books = $query->paginate(5)->withQueryString();
+            $genres = Book::distinct()->pluck('genre');
+
+            return view('books.index', compact('books', 'genres'));
+    }
 
     public function store(StoreBookRequest $request): JsonResponse
     {
