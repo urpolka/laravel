@@ -13,9 +13,9 @@ class AuthorController extends Controller
           return view('authors.index', compact('authors'));
     }
 
-    public function show(Author $author): JsonResponse
+    public function show(Author $author)
     {
         $author->load('books');
-        return response()->json($author);
-    }
+         return view('authors.show', compact('author'));
+     }
 }
