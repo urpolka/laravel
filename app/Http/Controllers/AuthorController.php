@@ -7,9 +7,10 @@ use Illuminate\Http\JsonResponse;
 
 class AuthorController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
     {
-        return response()->json(Author::with('books')->get());
+         $authors = Author::withCount('books')->get();
+          return view('authors.index', compact('authors'));
     }
 
     public function show(Author $author): JsonResponse
