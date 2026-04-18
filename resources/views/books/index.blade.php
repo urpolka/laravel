@@ -1,3 +1,16 @@
+<form method="GET" action="{{ route('books.index') }}">
+    <select name="genre">
+        <option value="">Все жанры</option>
+        @foreach($genres as $genre)
+            <option value="{{ $genre }}"
+                @selected(request('genre') == $genre)>
+                {{ $genre }}
+            </option>
+        @endforeach
+    </select>
+    <button type="submit">Фильтровать</button>
+    <a href="{{ route('books.index') }}">Скинуть</a>
+</form>
 @extends('layouts.app')
 
 @section('title', 'Книги')

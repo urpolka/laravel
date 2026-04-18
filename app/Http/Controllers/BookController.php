@@ -9,11 +9,17 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-  public function index()
-   {
-     $books = Book::with('author')->get();
-      return view('books.index', compact('books'));
-    }
+    public function index(Request $request)
+    {
+    $query = Book::with('author');
+    if ($request->filled('genre')) {
+        $query->where('genre', $request->genre);
+         }
+    $query->orderBy('year', 'desc');
+    $books = $query->get();
+    $genres = Book::distinct()->pluck('genre');
+    return view('books.index', compact('books', 'genres'));
+}
 
     public function store(StoreBookRequest $request): JsonResponse
     {
