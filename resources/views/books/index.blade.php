@@ -8,13 +8,8 @@
             </option>
         @endforeach
     </select>
-    <button type="submit">Фильтровать</button>
-    <a href="{{ route('books.index') }}">Скинуть</a>
-</form>
-@extends('layouts.app')
-
-@section('title', 'Книги')
-
+   <input type="text" name="search" value="{{ request('search') }}"
+       placeholder="Поиск по названию">
 @section('content')
     <h1>Список книг</h1>
 
@@ -30,6 +25,8 @@
             <td>{{ $book->title }}</td>
             <td>{{ $book->author->name ?? '—' }}</td>
             <td>{{ $book->year }}</td>
+            {{ $books->links() }}
+            <p>найдено: {{ $books->total() }}</p>
             <td>
                 <a href="{{ route('books.edit', $book) }}">Ред.</a>
                 <!-- Delete-форму додамо пізніше -->
